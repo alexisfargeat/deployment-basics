@@ -25,6 +25,13 @@ def read_todos(
         select(Todo).order_by(Todo.id).limit(limit).offset(offset)
     ).all()
 
+@app.get("/todos/{todo_id}", response_model=TodoRead)
+def read_todo(todo_id: int, session: Session = Depends(get_session)) -> Todo:
+    db_todo: Optional[Todo] = session.get(Todo, todo_id)
+    if not db_todo:
+        raise HTTPException(status_code=404, detail="Todo not found")
+    return db_todo
+
 
 @app.post("/todos", response_model=TodoRead)
 def create_todo(todo: TodoCreate, session: Session = Depends(get_session)) -> Todo:
