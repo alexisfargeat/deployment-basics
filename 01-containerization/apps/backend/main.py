@@ -1,5 +1,5 @@
 from typing import Sequence, Optional
-from fastapi import FastAPI, Depends, Query, HTTPException
+from fastapi import FastAPI, Depends, HTTPException
 from sqlmodel import Session, select
 from contextlib import asynccontextmanager
 from database import create_db_and_tables, get_session
@@ -17,13 +17,12 @@ app = FastAPI(lifespan=lifespan)
 
 @app.get("/todos", response_model=list[TodoRead])
 def read_todos(
-    limit: int = Query(default=20, le=50),
-    offset: int = 0,
-    session: Session = Depends(get_session),
+        session: Session = Depends(get_session),
 ) -> Sequence[Todo]:
     return session.exec(
-        select(Todo).order_by(Todo.id).limit(limit).offset(offset)
+        select(Todo).order_by(Todo.id)
     ).all()
+
 
 @app.get("/todos/{todo_id}", response_model=TodoRead)
 def read_todo(todo_id: int, session: Session = Depends(get_session)) -> Todo:
@@ -44,7 +43,7 @@ def create_todo(todo: TodoCreate, session: Session = Depends(get_session)) -> To
 
 @app.patch("/todos/{todo_id}", response_model=TodoRead)
 def update_todo(
-    todo_id: int, todo: TodoUpdate, session: Session = Depends(get_session)
+        todo_id: int, todo: TodoUpdate, session: Session = Depends(get_session)
 ) -> Todo:
     db_todo: Optional[Todo] = session.get(Todo, todo_id)
     if not db_todo:
