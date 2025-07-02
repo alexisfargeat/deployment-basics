@@ -1,0 +1,8 @@
+# environment variables
+.env*
+
+# module directory
+node_modules
+
+# next cache
+.next
