@@ -2,8 +2,24 @@ import { AddTodoDialog } from "@/components/add-todo/dialog";
 import { TodoCard } from "@/components/todo-card";
 import { Todo } from "@/lib/types";
 
+export const dynamic = "force-dynamic";
 export default async function Home() {
-    const todos: Todo[] = await (await fetch(`${process.env.API_URL}/todos`)).json();
+    let todos: Todo[] = [];
+    let error = false;
+
+    try {
+        const todosResult = await fetch(`${process.env.API_URL}/todos`,);
+
+        if (!todosResult.ok) {
+            console.error(todosResult.status);
+            error = true;
+        }
+
+        todos = await todosResult.json();
+    } catch (err) {
+        console.error(err);
+        error = true;
+    }
 
     return (
         <div
@@ -13,6 +29,7 @@ export default async function Home() {
                     <h1 className="text-2xl font-bold">To Do app</h1>
                     <AddTodoDialog/>
                 </div>
+                {error && <div className="text-red-500">Failed to load todos. Please try again later.</div>}
                 <div className="flex flex-col gap-4 w-full">
                     {todos.map((todo) => (
                         <TodoCard todo={todo} key={todo.id}/>
