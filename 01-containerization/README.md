@@ -235,16 +235,17 @@ directory:
 
 ```bash
 docker run -p 8000:8000 --network apps_default \
-  -e DATABASE_URL=postgresql://user:password@postgres:5432/todo
+  -e DATABASE_URL=postgresql+psycopg2://user:password@postgres:5432/todos
 ```
 
 This command will run the backend application and expose it on port 8000.
 
 - The `--network apps_default` option allows the backend to connect to the PostgreSQL database running in the Docker
   Compose network.
-- The `-e DATABASE_URL=postgresql://user:password@postgres:5432/todo` option sets the environment variable
+- The `-e DATABASE_URL=postgresql+psycopg2://user:password@postgres:5432/todos` option sets the environment variable
   `DATABASE_URL` to connect to the PostgreSQL database. The `@postgres` part refers to the domain name given by docker
-  to the postgres container, which is `postgres` in this case (as declared in the compose file).
+  to the postgres container, which is `postgres` in this case (as declared in the compose file). The `+psycopg2` part
+  specifies the database driver to use, which is `psycopg2` in this case.
 
 ### Bonus step : try to run the frontend and backend together
 
@@ -317,7 +318,7 @@ the
      ports:
        - "8000:8000"  # 🚪 Expose backend port
      environment:
-       DATABASE_URL: postgresql://user:password@postgres:5432/todo  # 🔗 Database connection
+       DATABASE_URL: postgresql+psycopg2://user:password@postgres:5432/todos  # 🔗 Database connection
    ```
 
 </details>
